@@ -74,8 +74,8 @@ public class Solver {
             currentPriorityQueueTwin.insert(temp1Twin);
         }
         /* Twins do not need to know the previous node. Create twins in the same loop as regular search  nodes
-         * with null for previous search node, and other fields. You do not even need to push them to a minimum
-         * priority queue. Just monitor them for matching the goal. */
+         * with null for previous search node, and other fields. Don't even push them to their own queue; just
+         * monitor them for matching the goal. */
         for (Board b : minSearchNode.currentBoard.neighbors()) {
             SearchNode temp1 = new SearchNode(b, minSearchNode, minSearchNode.numOfMoves + 1, (b.manhattan() +
                     (minSearchNode.numOfMoves + 1)), b.manhattan());
