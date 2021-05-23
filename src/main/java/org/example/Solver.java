@@ -32,6 +32,8 @@ public class Solver {
         /* (Board b, SearchNode prev, int moves, int priority, int manhattan) */
         SearchNode initialTwinSearchNode = new SearchNode(currentTwinBoard, null, 0, (currentTwinBoard.manhattan()),
                 (currentTwinBoard.manhattan()));
+//        int twinPriority = initialBoard.twin().manhattan();
+//        SearchNode initialTwinSearchNode = new SearchNode(initialBoard.twin(), null, 0, twinPriority, twinPriority);
         // Create priority queues
         MinPQ<SearchNode> currentPriorityQueue = new MinPQ<SearchNode>(new Comparator<SearchNode>() {
             @Override
