@@ -1,0 +1,6 @@
+ Puzzle is solvable in 1 moves. Here are the list of boards: 2
+ 1  0 
+ 3  2 
+2
+ 1  2 
+ 3  0 
