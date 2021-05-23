@@ -13,6 +13,7 @@ public class Solver {
     private int moves = 0;
     private final ArrayList<Board> solutionBoardList = new ArrayList<>();
     private ArrayList<Board> result = new ArrayList<>();
+    private int manhattanOfb;
 
     public Solver(Board initialBoard) {
 
@@ -22,18 +23,19 @@ public class Solver {
         }
         /* initialize SearchNodes, twins, and associated boards. (Board b, SearchNode prev, int moves, int
         priority, int manhattan) */
-        SearchNode initialSearchNode = new SearchNode(initialBoard, null, 0, (initialBoard.manhattan()),
-                (initialBoard.manhattan()));
-        Board currentTwinBoard = initialBoard.twin();
-        if (currentTwinBoard.isGoal()) {
-            solvable = false;
-            return;
-        }
+        manhattanOfb = initialBoard.manhattan();
+        SearchNode initialSearchNode = new SearchNode(initialBoard, null, 0, manhattanOfb,
+                manhattanOfb);
+        //Board currentTwinBoard = initialBoard.twin();
+//        if (currentTwinBoard.isGoal()) {
+//            solvable = false;
+//            return;
+//        }
         /* (Board b, SearchNode prev, int moves, int priority, int manhattan) */
 //        SearchNode initialTwinSearchNode = new SearchNode(currentTwinBoard, null, 0, (currentTwinBoard.manhattan()),
 //                (currentTwinBoard.manhattan()));
-        int twinManhattan = initialBoard.twin().manhattan();
-        SearchNode initialTwinSearchNode = new SearchNode(initialBoard.twin(), null, 0, twinManhattan, twinManhattan);
+        //int twinManhattan = initialBoard.twin().manhattan();
+        SearchNode minTwinNode = new SearchNode(initialBoard.twin(), null, 0, 0, 0);
         // Create priority queues
         MinPQ<SearchNode> currentPriorityQueue = new MinPQ<SearchNode>(new Comparator<SearchNode>() {
             @Override
@@ -45,40 +47,41 @@ public class Solver {
                 else return 0;
             }
         });
-        MinPQ<SearchNode> currentPriorityQueueTwin = new MinPQ<SearchNode>(new Comparator<SearchNode>() {
-            @Override
-            public int compare(SearchNode o1, SearchNode o2) {
-                if (o1.prevSearchNode.numOfMoves + 1 + o1.manhattan
-                        > o2.prevSearchNode.numOfMoves + 1 + o2.manhattan) return 1;
-                else if (o2.prevSearchNode.numOfMoves + 1 + o2.manhattan >
-                        o1.prevSearchNode.numOfMoves + 1 + o1.manhattan) return -1;
-                else return 0;
-            }
-        });
+//        MinPQ<SearchNode> currentPriorityQueueTwin = new MinPQ<SearchNode>(new Comparator<SearchNode>() {
+//            @Override
+//            public int compare(SearchNode o1, SearchNode o2) {
+//                if (o1.prevSearchNode.numOfMoves + 1 + o1.manhattan
+//                        > o2.prevSearchNode.numOfMoves + 1 + o2.manhattan) return 1;
+//                else if (o2.prevSearchNode.numOfMoves + 1 + o2.manhattan >
+//                        o1.prevSearchNode.numOfMoves + 1 + o1.manhattan) return -1;
+//                else return 0;
+//            }
+//        });
         // put the first node in priority queues
         currentPriorityQueue.insert(initialSearchNode);
 
-        currentPriorityQueueTwin.insert(initialTwinSearchNode);
+        //currentPriorityQueueTwin.insert(initialTwinSearchNode);
         // Create a board for Goal
         /* Twin of the goal board is the goal of the twin of the initial board and it can lead to the goal
         board */
         /* Take the first nodes out of Priority Queues, calculate the neighbors, and put them in the nodes
         arrays */
         SearchNode minSearchNode = currentPriorityQueue.delMin();
-        SearchNode minTwinNode = currentPriorityQueueTwin.delMin();
+        //SearchNode minTwinNode = currentPriorityQueueTwin.delMin();
         /* (Board b, SearchNode prev, int moves, int priority, int manhattan) */
-        for (Board tb : minTwinNode.getCurrentBoard().neighbors()) {
-            twinManhattan = tb.manhattan();
-            SearchNode temp1Twin = new SearchNode(tb, minTwinNode, minTwinNode.numOfMoves + 1, (twinManhattan +
-                    (minTwinNode.numOfMoves + 1)), twinManhattan);
-            currentPriorityQueueTwin.insert(temp1Twin);
-        }
+//        for (Board tb : minTwinNode.getCurrentBoard().neighbors()) {
+//            twinManhattan = tb.manhattan();
+//            SearchNode temp1Twin = new SearchNode(tb, minTwinNode, minTwinNode.numOfMoves + 1, (twinManhattan +
+//                    (minTwinNode.numOfMoves + 1)), twinManhattan);
+//            currentPriorityQueueTwin.insert(temp1Twin);
+//        }
         /* Twins do not need to know the previous node. Create twins in the same loop as regular search  nodes
          * with null for previous search node, and other fields. Don't even push them to their own queue; just
          * monitor them for matching the goal. */
         for (Board b : minSearchNode.currentBoard.neighbors()) {
-            SearchNode temp1 = new SearchNode(b, minSearchNode, minSearchNode.numOfMoves + 1, (b.manhattan() +
-                    (minSearchNode.numOfMoves + 1)), b.manhattan());
+            manhattanOfb = b.manhattan();
+            SearchNode temp1 = new SearchNode(b, minSearchNode, minSearchNode.numOfMoves + 1, (manhattanOfb +
+                    (minSearchNode.numOfMoves + 1)), manhattanOfb);
             currentPriorityQueue.insert(temp1);
         }
 
@@ -90,26 +93,32 @@ public class Solver {
 
             /* If it was not visited or it might provide a better path expand it */
             minSearchNode = currentPriorityQueue.delMin();
-            minTwinNode = currentPriorityQueueTwin.delMin();
+            //minTwinNode = currentPriorityQueueTwin.delMin();
             // populate the priority queues with more nodes
-            for (Board tb : minTwinNode.currentBoard.neighbors()) {
-                /* (Board b, SearchNode prev, int moves, int priority, int manhattan) */
-                SearchNode temp1Twin = new SearchNode(tb, minTwinNode, minTwinNode.numOfMoves + 1,
-                        ((minTwinNode.numOfMoves + 1) + tb.manhattan()), tb.manhattan());
-                if (minTwinNode.prevSearchNode == null || !tb.equals(minTwinNode.prevSearchNode.
-                        currentBoard)) { // make sure this line works
-                    currentPriorityQueueTwin.insert(temp1Twin);
-                }
-            }
+//            for (Board tb : minTwinNode.currentBoard.neighbors()) {
+//                /* (Board b, SearchNode prev, int moves, int priority, int manhattan) */
+//                SearchNode temp1Twin = new SearchNode(tb, minTwinNode, minTwinNode.numOfMoves + 1,
+//                        ((minTwinNode.numOfMoves + 1) + tb.manhattan()), tb.manhattan());
+//                if (minTwinNode.prevSearchNode == null || !tb.equals(minTwinNode.prevSearchNode.
+//                        currentBoard)) { // make sure this line works
+//                    currentPriorityQueueTwin.insert(temp1Twin);
+//                }
+//            }
             /* add more nodes to priority queue
             (Board b, SearchNode prev, int moves, int priority, int manhattan) */
             for (Board b : minSearchNode.currentBoard.neighbors()) {
-                SearchNode temp1 = new SearchNode(b, minSearchNode, minSearchNode.numOfMoves + 1, (b.manhattan()
-                        + ((minSearchNode.numOfMoves) + 1)), b.manhattan());
+                manhattanOfb = b.manhattan();
+                SearchNode temp1 = new SearchNode(b, minSearchNode, minSearchNode.numOfMoves + 1, (manhattanOfb
+                        + ((minSearchNode.numOfMoves) + 1)), manhattanOfb);
 
                 if (minSearchNode.prevSearchNode == null || !b.equals(minSearchNode.prevSearchNode.
                         getCurrentBoard())) {
                     currentPriorityQueue.insert(temp1);
+                }
+                temp1 = new SearchNode(b.twin(), null, 0, 0, 0);
+                if (b.twin().isGoal()) {
+                    solvable = false;
+                    return;
                 }
             }
         } // very first loop -
@@ -194,7 +203,7 @@ public class Solver {
             if (sNodeObj == null) return false;
             if (this.getClass() != sNodeObj.getClass()) return false;
             SearchNode that = (SearchNode) sNodeObj;
-            if (!that.currentBoard.equals(this.currentBoard)) return false;
+            //if (!that.currentBoard.equals(this.currentBoard)) return false;
             return true;
         }
 
