@@ -30,10 +30,10 @@ public class Solver {
             return;
         }
         /* (Board b, SearchNode prev, int moves, int priority, int manhattan) */
-        SearchNode initialTwinSearchNode = new SearchNode(currentTwinBoard, null, 0, (currentTwinBoard.manhattan()),
-                (currentTwinBoard.manhattan()));
-//        int twinPriority = initialBoard.twin().manhattan();
-//        SearchNode initialTwinSearchNode = new SearchNode(initialBoard.twin(), null, 0, twinPriority, twinPriority);
+//        SearchNode initialTwinSearchNode = new SearchNode(currentTwinBoard, null, 0, (currentTwinBoard.manhattan()),
+//                (currentTwinBoard.manhattan()));
+        int twinManhattan = initialBoard.twin().manhattan();
+        SearchNode initialTwinSearchNode = new SearchNode(initialBoard.twin(), null, 0, twinManhattan, twinManhattan);
         // Create priority queues
         MinPQ<SearchNode> currentPriorityQueue = new MinPQ<SearchNode>(new Comparator<SearchNode>() {
             @Override
@@ -68,10 +68,14 @@ public class Solver {
         SearchNode minTwinNode = currentPriorityQueueTwin.delMin();
         /* (Board b, SearchNode prev, int moves, int priority, int manhattan) */
         for (Board tb : minTwinNode.getCurrentBoard().neighbors()) {
-            SearchNode temp1Twin = new SearchNode(tb, minTwinNode, minTwinNode.numOfMoves + 1, (tb.manhattan() +
-                    (minTwinNode.numOfMoves + 1)), tb.manhattan());
+            twinManhattan = tb.manhattan();
+            SearchNode temp1Twin = new SearchNode(tb, minTwinNode, minTwinNode.numOfMoves + 1, (twinManhattan +
+                    (minTwinNode.numOfMoves + 1)), twinManhattan);
             currentPriorityQueueTwin.insert(temp1Twin);
         }
+        /* Twins do not need to know the previous node. Create twins in the same loop as regular search  nodes
+         * with null for previous search node, and other fields. You do not even need to push them to a minimum
+         * priority queue. Just monitor them for matching the goal. */
         for (Board b : minSearchNode.currentBoard.neighbors()) {
             SearchNode temp1 = new SearchNode(b, minSearchNode, minSearchNode.numOfMoves + 1, (b.manhattan() +
                     (minSearchNode.numOfMoves + 1)), b.manhattan());
